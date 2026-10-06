@@ -338,7 +338,7 @@ export function ContactSection() {
                   <MagneticButton
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white shadow-xl shadow-blue-600/30 hover:bg-blue-700 transition-all disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 px-2 text-sm font-bold text-white shadow-xl shadow-blue-600/30 hover:bg-blue-700 transition-all disabled:opacity-50"
                     data-cursor="pointer"
                   >
                     {isSubmitting ? (
