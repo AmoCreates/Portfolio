@@ -16,6 +16,10 @@ export function CustomCursor() {
   const springX = useSpring(mouseX, { damping: 28, stiffness: 240, mass: 0.5 });
   const springY = useSpring(mouseY, { damping: 28, stiffness: 240, mass: 0.5 });
 
+  // Gentle fluid springs for trailing ambient blurred light ball
+  const glowSpringX = useSpring(mouseX, { damping: 32, stiffness: 130, mass: 0.8 });
+  const glowSpringY = useSpring(mouseY, { damping: 32, stiffness: 130, mass: 0.8 });
+
   useEffect(() => {
     // Only enable on fine pointer devices (desktop/mouse)
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
@@ -64,6 +68,22 @@ export function CustomCursor() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden" aria-hidden="true">
+      {/* Ambient Blurred Light Cursor Spotlight Ball */}
+      <motion.div
+        className="fixed top-0 left-0 h-[380px] w-[380px] sm:h-[480px] sm:w-[480px] rounded-full bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.22)_0%,rgba(56,189,248,0.16)_45%,rgba(147,51,234,0.06)_70%,transparent_100%)] blur-[70px]"
+        style={{
+          x: glowSpringX,
+          y: glowSpringY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+        animate={{
+          scale: isClicking ? 0.85 : isPointer ? 1.3 : 1,
+          opacity: isVisible ? (isPointer ? 0.9 : 0.75) : 0,
+        }}
+        transition={{ duration: 0.25 }}
+      />
+
       {/* Center electric blue dot */}
       <motion.div
         className="fixed top-0 left-0 h-2.5 w-2.5 rounded-full bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.8)]"
