@@ -83,12 +83,25 @@ export function ContactSection() {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message.");
+      }
+
       setIsSubmitted(true);
       showToast(
         "Message Transmitted!",
-        "Thanks for reaching out! I'll get back to you promptly.",
+        "Thanks for reaching out! Your email has been delivered directly to my inbox.",
         "success"
       );
 
@@ -109,7 +122,15 @@ export function ContactSection() {
         subject: "",
         message: "",
       });
-    }, 1200);
+    } catch (err: any) {
+      showToast(
+        "Transmission Error",
+        err.message || "Failed to deliver email. Please check your credentials.",
+        "error"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCopy = async (key: string, text: string) => {
