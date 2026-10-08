@@ -72,37 +72,61 @@ body {
   color: #f8fafc !important;
 }
 
-[data-theme="black-white"] .bg-white,
-[data-theme="black-white"] .bg-white\/80,
-[data-theme="black-white"] .bg-white\/90,
-[data-theme="black-white"] .bg-white\/60,
-[data-theme="black-white"] .bg-white\/95,
-[data-theme="black-white"] .bg-slate-50,
-[data-theme="black-white"] .bg-slate-50\/60 {
+/* Transform all white and light-slate background containers into dark slate glass cards */
+[data-theme="black-white"] [class*="bg-white"],
+[data-theme="black-white"] [class*="bg-slate-50"],
+[data-theme="black-white"] [class*="bg-slate-100"] {
   background-color: rgba(15, 23, 42, 0.88) !important;
-  border-color: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(51, 65, 85, 0.6) !important;
   color: #f8fafc !important;
 }
 
+/* Transform nested blue/sky light boxes (e.g., stats, pillars, metrics) into dark accent surfaces */
+[data-theme="black-white"] [class*="bg-blue-50"],
+[data-theme="black-white"] [class*="bg-sky-50"],
+[data-theme="black-white"] [class*="bg-indigo-50"] {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+  color: #f8fafc !important;
+}
+
+/* High-contrast typography for dark theme */
 [data-theme="black-white"] .text-slate-900,
 [data-theme="black-white"] .text-slate-800,
 [data-theme="black-white"] .text-slate-700 {
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
 [data-theme="black-white"] .text-slate-600,
-[data-theme="black-white"] .text-slate-500 {
-  color: #94a3b8 !important;
+[data-theme="black-white"] .text-slate-500,
+[data-theme="black-white"] .text-slate-400 {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="black-white"] .text-blue-600,
+[data-theme="black-white"] .text-blue-700,
+[data-theme="black-white"] .text-blue-500 {
+  color: #38bdf8 !important;
+}
+
+[data-theme="black-white"] .text-blue-900,
+[data-theme="black-white"] .text-blue-800 {
+  color: #7dd3fc !important;
 }
 
 [data-theme="black-white"] .border-slate-200,
-[data-theme="black-white"] .border-slate-200\/80 {
-  border-color: rgba(30, 41, 59, 0.8) !important;
+[data-theme="black-white"] [class*="border-slate-200"] {
+  border-color: rgba(51, 65, 85, 0.7) !important;
+}
+
+[data-theme="black-white"] .border-blue-200,
+[data-theme="black-white"] [class*="border-blue-200"] {
+  border-color: rgba(56, 189, 248, 0.3) !important;
 }
 
 [data-theme="black-white"] input,
 [data-theme="black-white"] textarea {
-  background-color: rgba(30, 41, 59, 0.7) !important;
+  background-color: rgba(30, 41, 59, 0.8) !important;
   border-color: rgba(51, 65, 85, 0.8) !important;
   color: #ffffff !important;
 }
