@@ -10,6 +10,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { portfolioData } from "@/config/portfolioData";
 
+import { ThemeProvider } from "@/context/ThemeContext";
+
 export const metadata: Metadata = {
   title: `${portfolioData.personal.name} | Full-Stack Software Engineer`,
   description:
@@ -45,24 +47,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className="min-h-screen bg-[#f8fafc] text-[#0f172a] antialiased selection:bg-blue-600 selection:text-white">
-        <ToastProvider>
-          <SmoothScroll>
-            {/* Visual Ambiance Layer */}
-            <ScrollProgressBar />
-            <NoiseOverlay />
-            <AmbientGlow />
-            <CustomCursor />
+    <html lang="en" className="scroll-smooth" data-theme="white-blue">
+      <body className="min-h-screen antialiased transition-colors duration-300">
+        <ThemeProvider>
+          <ToastProvider>
+            <SmoothScroll>
+              {/* Visual Ambiance Layer */}
+              <ScrollProgressBar />
+              <NoiseOverlay />
+              <AmbientGlow />
+              <CustomCursor />
 
-            {/* Application Shell */}
-            <div className="relative z-10 flex min-h-screen flex-col justify-between">
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-          </SmoothScroll>
-        </ToastProvider>
+              {/* Application Shell */}
+              <div className="relative z-10 flex min-h-screen flex-col justify-between">
+                <Navbar />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+            </SmoothScroll>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

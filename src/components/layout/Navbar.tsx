@@ -7,6 +7,8 @@ import { Menu, X, ArrowUpRight, Github, Sparkles, Download } from "lucide-react"
 import { portfolioData } from "@/config/portfolioData";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
+import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
+
 const NAV_LINKS = [
   { name: "About", href: "#about" },
   { name: "Projects", href: "#projects" },
@@ -53,8 +55,8 @@ export function Navbar() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className={`pointer-events-auto flex items-center justify-between gap-4 md:gap-8 rounded-full border px-4 py-2.5 md:px-6 md:py-3 transition-all duration-300 ${
             isScrolled
-              ? "border-white/90 bg-white/80 shadow-[0_10px_35px_-5px_rgba(15,23,42,0.1)] backdrop-blur-2xl"
-              : "border-white/70 bg-white/60 backdrop-blur-xl shadow-sm"
+              ? "border-white/90 bg-white/80 shadow-[0_10px_35px_-5px_rgba(15,23,42,0.1)] backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/80"
+              : "border-white/70 bg-white/60 backdrop-blur-xl shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60"
           }`}
         >
           {/* Logo / Avatar Monogram */}
@@ -110,8 +112,11 @@ export function Navbar() {
             })}
           </div>
 
-          {/* GitHub CTA & Status Badge */}
+          {/* Theme Switcher, GitHub CTA & Status Badge */}
           <div className="flex items-center gap-2.5">
+            {/* 3 Theme Color Circle Buttons (No Text) */}
+            <ThemeSwitcher />
+
             {/* Status indicator (Desktop only) */}
             {portfolioData.personal.status.available && (
               <div className="hidden lg:flex items-center gap-2 rounded-full border border-blue-200/80 bg-blue-50/90 px-3 py-1 text-[11px] font-mono text-blue-700 shadow-sm">

@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
+import { useTheme } from "@/context/ThemeContext";
+
 export function AmbientGlow() {
+  const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
   const mouseX = useMotionValue(-600);
@@ -34,11 +37,22 @@ export function AmbientGlow() {
     };
   }, [isVisible, mouseX, mouseY]);
 
+  // Dynamic gradient string based on selected theme
+  const getGlowGradient = () => {
+    if (theme === "white-purple") {
+      return "bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.35)_0%,rgba(168,85,247,0.22)_38%,rgba(192,132,252,0.08)_65%,transparent_80%)]";
+    }
+    if (theme === "black-white") {
+      return "bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25)_0%,rgba(56,189,248,0.20)_38%,rgba(148,163,184,0.08)_65%,transparent_80%)]";
+    }
+    return "bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.32)_0%,rgba(56,189,248,0.22)_38%,rgba(99,102,241,0.08)_65%,transparent_80%)]";
+  };
+
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
-      {/* Mouse-following Large Blue Ambient Light Ball (Behind cards & grid) */}
+      {/* Mouse-following Large Ambient Light Ball (Behind cards & grid) */}
       <motion.div
-        className="fixed top-0 left-0 h-[450px] w-[450px] sm:h-[600px] sm:w-[600px] rounded-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.32)_0%,rgba(56,189,248,0.22)_38%,rgba(99,102,241,0.08)_65%,transparent_80%)] blur-[75px]"
+        className={`fixed top-0 left-0 h-[450px] w-[450px] sm:h-[600px] sm:w-[600px] rounded-full blur-[75px] transition-colors duration-500 ${getGlowGradient()}`}
         style={{
           x: springX,
           y: springY,
