@@ -250,7 +250,7 @@ export const portfolioData: PortfolioData = {
         { label: "Context Window", value: "Multi-Turn" },
       ],
       githubUrl: "https://github.com/AmoCreates/Virtual-Assistant-Backend",
-      liveUrl: "https://virtual-assistant-eosin.vercel.app/",
+      liveUrl: "https://virtual-assistant-v2.vercel.app/",
       gradientTheme: "from-neutral-200 via-neutral-400 to-amber-400",
       accentColor: "#ffffff",
       previewType: "image",
