@@ -16,12 +16,7 @@ export function CustomCursor() {
   const springX = useSpring(mouseX, { damping: 28, stiffness: 240, mass: 0.5 });
   const springY = useSpring(mouseY, { damping: 28, stiffness: 240, mass: 0.5 });
 
-  // Gentle fluid springs for trailing ambient blurred light ball
-  const glowSpringX = useSpring(mouseX, { damping: 32, stiffness: 130, mass: 0.8 });
-  const glowSpringY = useSpring(mouseY, { damping: 32, stiffness: 130, mass: 0.8 });
-
   useEffect(() => {
-    // Only enable on fine pointer devices (desktop/mouse)
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (isTouch) return;
 
@@ -68,9 +63,9 @@ export function CustomCursor() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden" aria-hidden="true">
-      {/* Center electric blue dot */}
+      {/* Center neon red dot */}
       <motion.div
-        className="fixed top-0 left-0 h-2.5 w-2.5 rounded-full bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.8)]"
+        className="fixed top-0 left-0 h-2 w-2 rounded-full bg-[#FF0D4A] shadow-[0_0_12px_#FF0D4A]"
         style={{
           x: mouseX,
           y: mouseY,
@@ -78,14 +73,14 @@ export function CustomCursor() {
           translateY: "-50%",
         }}
         animate={{
-          scale: isClicking ? 0.6 : isPointer ? 1.4 : 1,
+          scale: isClicking ? 0.6 : isPointer ? 1.5 : 1,
         }}
         transition={{ duration: 0.15 }}
       />
 
-      {/* Trailing frosted glass ring */}
+      {/* Trailing precision ring */}
       <motion.div
-        className="fixed top-0 left-0 flex items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 backdrop-blur-[2px] shadow-sm"
+        className="fixed top-0 left-0 flex items-center justify-center rounded-full border border-white/20 bg-black/10 backdrop-blur-[2px] shadow-sm"
         style={{
           x: springX,
           y: springY,
@@ -93,16 +88,16 @@ export function CustomCursor() {
           translateY: "-50%",
         }}
         animate={{
-          width: cursorText ? 84 : isPointer ? 54 : 32,
-          height: cursorText ? 84 : isPointer ? 54 : 32,
-          borderColor: isPointer ? "rgba(37, 99, 235, 0.8)" : "rgba(59, 130, 246, 0.35)",
-          backgroundColor: isPointer ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.4)",
+          width: cursorText ? 84 : isPointer ? 48 : 28,
+          height: cursorText ? 84 : isPointer ? 48 : 28,
+          borderColor: isPointer ? "rgba(255, 13, 74, 0.75)" : "rgba(255, 255, 255, 0.2)",
+          backgroundColor: isPointer ? "rgba(255, 13, 74, 0.08)" : "transparent",
           scale: isClicking ? 0.85 : 1,
         }}
         transition={{ type: "spring", damping: 25, stiffness: 280 }}
       >
         {cursorText && (
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-900">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white">
             {cursorText}
           </span>
         )}

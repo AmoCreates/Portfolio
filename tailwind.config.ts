@@ -9,59 +9,61 @@ const config: Config = {
   darkMode: "class",
   theme: {
     extend: {
-      colors: {
-        background: "#f8fafc", // Soft ice-white background
-        surface: {
-          DEFAULT: "rgba(255, 255, 255, 0.75)",
-          hover: "rgba(255, 255, 255, 0.9)",
-          card: "rgba(255, 255, 255, 0.7)",
-          border: "rgba(255, 255, 255, 0.8)",
-          glow: "rgba(37, 99, 235, 0.12)",
-        },
-        frost: {
-          50: "#f8fafc",
-          100: "#f1f5f9",
-          200: "#e2e8f0",
-          300: "#cbd5e1",
-          400: "#94a3b8",
-          500: "#64748b",
-          600: "#475569",
-          700: "#334155",
-          800: "#1e293b",
-          900: "#0f172a",
-          950: "#020617",
-        },
-        electric: {
-          blue: "#2563eb",
-          royal: "#1d4ed8",
-          cyan: "#0284c7",
-          sky: "#38bdf8",
-          light: "#dbeafe",
-        },
+      fontFamily: {
+        sans: ["var(--font-manrope)", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        display: ["var(--font-manrope)", "sans-serif"],
+        mono: [
+          "var(--font-mono)",
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "monospace",
+        ],
       },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "ice-ambient-glow":
-          "radial-gradient(circle at 50% 25%, rgba(59, 130, 246, 0.15), rgba(14, 165, 233, 0.08) 45%, transparent 75%)",
-        "glass-white":
-          "linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%)",
+      colors: {
+        w3: {
+          dark: "#0E0E10",
+          darker: "#08080A",
+          charcoal: "#111111",
+          black: "#0d0d0d",
+          "card-dark": "#121212",
+          "card-darker": "#181818",
+          light: "#F7F7F5",
+          canvas: "#FBFAF7",
+          "card-light": "#ecece7",
+          "card-sand": "#deddd8",
+          red: "#FF0D4A",
+          crimson: "#D6003C",
+          green: "#22C55E",
+          muted: "#6F6A72",
+          subtle: "#9C96A0",
+          border: "rgba(17,17,17,.14)",
+          "border-dark": "rgba(255,255,255,.12)",
+        },
       },
       boxShadow: {
-        "glass": "0 10px 40px -10px rgba(15, 23, 42, 0.07)",
-        "glass-hover": "0 20px 50px -10px rgba(37, 99, 235, 0.15)",
-        "blue-glow": "0 0 35px -5px rgba(37, 99, 235, 0.35)",
-        "soft-elevation": "0 20px 60px -15px rgba(15, 23, 42, 0.08)",
+        "w3-btn": "0 12px 28px rgba(255,13,74,.3)",
+        "w3-btn-hover": "0 18px 38px rgba(255,13,74,.5)",
+        "w3-card": "0 -8px 30px rgba(0,0,0,.12), 0 24px 60px rgba(0,0,0,.18)",
+        "w3-nav": "0 16px 36px rgba(0,0,0,.05)",
+        "w3-glow": "0 0 90px rgba(255,13,74,.18)",
+        "w3-green": "0 0 8px #22C55E",
       },
       animation: {
-        "pulse-slow": "pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "float": "float 8s ease-in-out infinite",
+        "w3-pulse": "w3pulse 1.8s infinite ease-in-out",
+        "w3-aurora": "w3aurora 6s infinite alternate ease-in-out",
       },
       keyframes: {
-        float: {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-12px)" },
+        w3pulse: {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.4", transform: "scale(0.85)" },
+        },
+        w3aurora: {
+          "0%": { transform: "translate(-50%, -50%) scale(1) rotate(0deg)", opacity: "0.8" },
+          "50%": { transform: "translate(-48%, -52%) scale(1.15) rotate(15deg)", opacity: "1" },
+          "100%": { transform: "translate(-52%, -48%) scale(0.95) rotate(-15deg)", opacity: "0.85" },
         },
       },
     },

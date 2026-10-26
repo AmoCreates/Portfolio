@@ -1,144 +1,161 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ArrowUp, Github, Linkedin, Mail } from "lucide-react";
+import React from "react";
+import Link from "next/link";
 import { portfolioData } from "@/config/portfolioData";
-import { MagneticButton } from "@/components/ui/MagneticButton";
-
-const iconMap: Record<string, React.ReactNode> = {
-  Github: <Github className="h-4 w-4" />,
-  Linkedin: <Linkedin className="h-4 w-4" />,
-  Mail: <Mail className="h-4 w-4" />,
-};
 
 export function Footer() {
-  const [timeString, setTimeString] = useState<string>("");
+  const currentYear = new Date().getFullYear();
 
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      };
-      setTimeString(new Intl.DateTimeFormat("en-IN", options).format(now));
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   };
 
   return (
-    <footer className="relative border-t border-slate-200/80 bg-white/70 pt-16 pb-12 backdrop-blur-2xl">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 lg:gap-16 pb-12 border-b border-slate-200/80">
-          {/* Col 1: Brand & Philosophy */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 font-mono text-xs font-bold text-white shadow-md">
-                AM
+    <footer
+      style={{
+        background: "#0d0d0d",
+        color: "#F7F7F5",
+        borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+      }}
+      className="pt-16 sm:pt-20 pb-12"
+    >
+      <div className="max-w-[1320px] mx-auto px-6 sm:px-9">
+        {/* Main Footer Row */}
+        <div className="flex flex-col md:flex-row justify-between gap-12 sm:gap-14 mb-14">
+          {/* Left Brand & Bio */}
+          <div className="max-w-[380px]">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-white text-[#111] flex items-center justify-center font-bold text-sm">
+                A
               </div>
-              <span className="font-mono text-sm font-semibold tracking-wide text-slate-900">
-                {portfolioData.personal.name}
+              <span
+                style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+                className="text-[22px] font-bold tracking-[-0.02em] text-white"
+              >
+                Anmol Maurya
               </span>
             </div>
-            <p className="text-sm text-slate-600 leading-relaxed max-w-sm">
-              Full-Stack Software Engineer. Crafting low-latency real-time systems, AI builders, and high-performance web platforms.
+
+            <p className="text-[14px] text-[#999] leading-[1.65] m-0 mb-6">
+              Full-Stack Software Engineer building high-throughput real-time WebSocket systems, Google Gemini AI platforms, and resilient cloud architectures.
             </p>
-            {/* Live Clock */}
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-600">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-600" />
-              </span>
-              <span>Local Time (IST):</span>
-              <span className="text-blue-700 font-bold">{timeString || "00:00:00 IST"}</span>
+
+            <div className="flex items-center gap-2.5 text-[12px] font-mono text-white/80">
+              <span className="w-2 h-2 rounded-full bg-[#22C55E] shadow-[0_0_8px_#22C55E] animate-w3-pulse" />
+              <span>Available for Contract &amp; Full-Time Roles</span>
             </div>
           </div>
 
-          {/* Col 2: Navigation & Sections */}
-          <div className="space-y-3">
-            <h4 className="font-mono text-xs uppercase tracking-wider text-slate-500">Navigation</h4>
-            <ul className="grid grid-cols-2 gap-2 text-sm text-slate-600 font-mono">
-              <li>
-                <a href="#hero" className="hover:text-blue-600 transition-colors" data-cursor="pointer">
-                  // Hero
-                </a>
-              </li>
-              <li>
-                <a href="#about" className="hover:text-blue-600 transition-colors" data-cursor="pointer">
-                  // About
-                </a>
-              </li>
-              <li>
-                <a href="#projects" className="hover:text-blue-600 transition-colors" data-cursor="pointer">
-                  // Projects
-                </a>
-              </li>
-              <li>
-                <a href="#skills" className="hover:text-blue-600 transition-colors" data-cursor="pointer">
-                  // Skills
-                </a>
-              </li>
-              <li>
-                <a href="#experience" className="hover:text-blue-600 transition-colors" data-cursor="pointer">
-                  // Experience
-                </a>
-              </li>
-              <li>
-                <a href="#contact" className="hover:text-blue-600 transition-colors" data-cursor="pointer">
-                  // Contact
-                </a>
-              </li>
-            </ul>
-          </div>
+          {/* Right Navigation & Social Columns */}
+          <div className="flex flex-col sm:flex-row gap-10 sm:gap-16 lg:gap-24">
+            {/* Explore column */}
+            <div className="flex flex-col gap-2.5">
+              <span className="text-[10px] font-mono font-bold tracking-[.16em] text-[#9a9a9a] mb-2 uppercase">
+                EXPLORE
+              </span>
+              <a
+                href="#top"
+                onClick={(e) => handleLinkClick(e, "#top")}
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A]"
+              >
+                Home
+              </a>
+              <a
+                href="#believe"
+                onClick={(e) => handleLinkClick(e, "#believe")}
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A]"
+              >
+                What I Believe
+              </a>
+              <a
+                href="#projects"
+                onClick={(e) => handleLinkClick(e, "#projects")}
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A]"
+              >
+                Selected Work
+              </a>
+              <a
+                href="#services"
+                onClick={(e) => handleLinkClick(e, "#services")}
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A]"
+              >
+                Capabilities
+              </a>
+              <a
+                href="#process"
+                onClick={(e) => handleLinkClick(e, "#process")}
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A]"
+              >
+                Process
+              </a>
+              <a
+                href="#faqs"
+                onClick={(e) => handleLinkClick(e, "#faqs")}
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A]"
+              >
+                FAQs
+              </a>
+            </div>
 
-          {/* Col 3: Connect & Socials */}
-          <div className="space-y-4">
-            <h4 className="font-mono text-xs uppercase tracking-wider text-slate-500">Connect</h4>
-            <div className="flex flex-wrap gap-2">
-              {portfolioData.personal.socialLinks.map((link) => (
-                <MagneticButton
-                  key={link.platform}
-                  as="a"
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600 shadow-sm"
-                  data-cursor="pointer"
-                >
-                  {iconMap[link.icon] || <Github className="h-4 w-4" />}
-                  <span>{link.platform}</span>
-                </MagneticButton>
-              ))}
+            {/* Connect column */}
+            <div className="flex flex-col gap-2.5">
+              <span className="text-[10px] font-mono font-bold tracking-[.16em] text-[#9a9a9a] mb-2 uppercase">
+                CONNECT
+              </span>
+              <a
+                href={`mailto:${portfolioData.personal.email}`}
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A] flex items-center gap-2"
+              >
+                <span>Email</span>
+                <span className="font-mono text-xs">↗</span>
+              </a>
+              <a
+                href={portfolioData.personal.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A] flex items-center gap-2"
+              >
+                <span>GitHub</span>
+                <span className="font-mono text-xs">↗</span>
+              </a>
+              <a
+                href={portfolioData.personal.socialLinks.find((s) => s.platform === "LinkedIn")?.url || "https://linkedin.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A] flex items-center gap-2"
+              >
+                <span>LinkedIn</span>
+                <span className="font-mono text-xs">↗</span>
+              </a>
+              <a
+                href={portfolioData.personal.resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A] flex items-center gap-2"
+              >
+                <span>Resume PDF</span>
+                <span className="font-mono text-xs">↗</span>
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono">
-          <p>© {new Date().getFullYear()} {portfolioData.personal.name}. All rights reserved.</p>
-
-          <p className="flex items-center gap-1.5">
-            <span>Engineered with Next.js, React, Tailwind CSS, Framer Motion &amp; GSAP</span>
-          </p>
-
-          <MagneticButton
-            onClick={scrollToTop}
-            className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs text-slate-700 hover:border-blue-400 hover:text-blue-600 shadow-sm"
-            data-cursor="pointer"
-          >
-            <span>Back to top</span>
-            <ArrowUp className="h-3.5 w-3.5" />
-          </MagneticButton>
+        {/* Bottom Legal / Tech Credit Row */}
+        <div
+          style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}
+          className="pt-7 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 text-[12px] text-[#888] font-mono"
+        >
+          <span>© {currentYear} Anmol Maurya (Amy). All rights reserved.</span>
+          <span className="text-white/60">
+            Engineered with Next.js, TypeScript &amp; Tailwind CSS
+          </span>
         </div>
       </div>
     </footer>

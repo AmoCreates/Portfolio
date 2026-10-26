@@ -3,10 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
-import { useTheme } from "@/context/ThemeContext";
-
 export function AmbientGlow() {
-  const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
   const mouseX = useMotionValue(-600);
@@ -37,86 +34,19 @@ export function AmbientGlow() {
     };
   }, [isVisible, mouseX, mouseY]);
 
-  // Dynamic gradient string based on selected theme
-  const getGlowGradient = () => {
-    if (theme === "white-purple") {
-      return "bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.35)_0%,rgba(168,85,247,0.22)_38%,rgba(192,132,252,0.08)_65%,transparent_80%)]";
-    }
-    if (theme === "black-white") {
-      return "bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25)_0%,rgba(56,189,248,0.20)_38%,rgba(148,163,184,0.08)_65%,transparent_80%)]";
-    }
-    return "bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.32)_0%,rgba(56,189,248,0.22)_38%,rgba(99,102,241,0.08)_65%,transparent_80%)]";
-  };
-
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
-      {/* Mouse-following Large Ambient Light Ball (Behind cards & grid) */}
+      {/* Mouse-following Subtle Red Ambient Glow */}
       <motion.div
-        className={`fixed top-0 left-0 h-[450px] w-[450px] sm:h-[600px] sm:w-[600px] rounded-full blur-[75px] transition-colors duration-500 ${getGlowGradient()}`}
+        className="fixed top-0 left-0 h-[480px] w-[480px] rounded-full blur-[90px] bg-[radial-gradient(circle_at_center,rgba(255,13,74,0.07)_0%,rgba(255,13,74,0.03)_40%,transparent_75%)]"
         style={{
           x: springX,
           y: springY,
           translateX: "-50%",
           translateY: "-50%",
-        }}
-        animate={{
           opacity: isVisible ? 1 : 0,
         }}
-        transition={{ duration: 0.3 }}
       />
-
-      {/* Primary Ice Blue Radiant Orb Top */}
-      <motion.div
-        animate={{
-          x: [0, 50, -40, 0],
-          y: [0, -30, 40, 0],
-          scale: [1, 1.12, 0.95, 1],
-          opacity: [0.25, 0.4, 0.25],
-        }}
-        transition={{
-          duration: 16,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute -top-[15%] left-1/2 -translate-x-1/2 h-[600px] w-[900px] rounded-full bg-gradient-to-b from-blue-400/20 via-sky-300/15 to-transparent blur-[130px]"
-      />
-
-      {/* Secondary Soft Royal Blue Light Right */}
-      <motion.div
-        animate={{
-          x: [0, -40, 50, 0],
-          y: [0, 50, -30, 0],
-          scale: [1, 0.9, 1.1, 1],
-          opacity: [0.15, 0.28, 0.15],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2,
-        }}
-        className="absolute top-[35%] -right-[10%] h-[550px] w-[550px] rounded-full bg-blue-600/15 blur-[150px]"
-      />
-
-      {/* Tertiary Soft Cyan Orb Bottom Left */}
-      <motion.div
-        animate={{
-          x: [0, 40, -30, 0],
-          y: [0, -40, 40, 0],
-          scale: [1, 1.15, 0.9, 1],
-          opacity: [0.18, 0.3, 0.18],
-        }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 4,
-        }}
-        className="absolute bottom-[10%] -left-[10%] h-[600px] w-[600px] rounded-full bg-sky-400/20 blur-[160px]"
-      />
-
-      {/* Light Mesh Grid Lines Accent */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#3b82f612_1px,transparent_1px),linear-gradient(to_bottom,#3b82f612_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
     </div>
   );
 }

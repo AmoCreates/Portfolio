@@ -1,40 +1,24 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowUpRight, Github, Sparkles, Download } from "lucide-react";
+import Link from "next/link";
 import { portfolioData } from "@/config/portfolioData";
-import { MagneticButton } from "@/components/ui/MagneticButton";
-
-import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-
-const NAV_LINKS = [
-  { name: "About", href: "#about" },
-  { name: "Projects", href: "#projects" },
-  { name: "Skills", href: "#skills" },
-  { name: "Experience", href: "#experience" },
-  { name: "Contact", href: "#contact" },
-];
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("top");
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-
-      const sections = NAV_LINKS.map((link) => link.href.substring(1));
-      const scrollPosition = window.scrollY + 200;
+      const sections = ["top", "believe", "projects", "services", "process", "studio", "faqs", "cta"];
+      const scrollPos = window.scrollY + 200;
 
       for (const sectionId of sections) {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const top = element.offsetTop;
-          const height = element.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
             setActiveSection(sectionId);
             break;
           }
@@ -42,174 +26,156 @@ export function Navbar() {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navLinks = [
+    { label: "Home", href: "#top", id: "top" },
+    { label: "Believe", href: "#believe", id: "believe" },
+    { label: "Projects", href: "#projects", id: "projects" },
+    { label: "Services", href: "#services", id: "services" },
+    { label: "Process", href: "#process", id: "process" },
+    { label: "Lab", href: "#studio", id: "studio" },
+    { label: "FAQ", href: "#faqs", id: "faqs" },
+  ];
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      setIsMobileMenuOpen(false);
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
-    <>
-      <header className="fixed top-0 left-0 right-0 z-40 flex justify-center px-4 py-4 md:py-6 pointer-events-none transition-all duration-300">
-        <motion.nav
-          initial={{ y: -30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className={`pointer-events-auto flex items-center justify-between gap-4 md:gap-8 rounded-full border px-4 py-2.5 md:px-6 md:py-3 transition-all duration-300 ${
-            isScrolled
-              ? "border-white/90 bg-white/80 shadow-[0_10px_35px_-5px_rgba(15,23,42,0.1)] backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/80"
-              : "border-white/70 bg-white/60 backdrop-blur-xl shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60"
-          }`}
+    <header className="fixed top-4 sm:top-6 left-0 w-full z-[100] flex justify-center px-4 sm:px-6 pointer-events-none">
+      <div
+        className="pointer-events-auto flex items-center justify-between gap-6 lg:gap-10 rounded-full pl-4 pr-2.5 py-2.5 w-full max-w-[1120px] transition-all duration-300"
+        style={{
+          background: "rgba(247, 247, 245, 0.88)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(17, 17, 17, 0.08)",
+          boxShadow: "0 16px 36px rgba(0, 0, 0, 0.05)",
+        }}
+      >
+        {/* Brand Logo & Name */}
+        <a
+          href="#top"
+          onClick={(e) => handleLinkClick(e, "#top")}
+          className="w3-tap-h flex items-center gap-2.5 flex-shrink-0"
+          style={{
+            fontFamily: "var(--font-manrope), sans-serif",
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+          }}
         >
-          {/* Logo / Avatar Monogram */}
+          <div className="w-7 h-7 rounded-full bg-[#111] flex items-center justify-center text-white text-[12px] font-black relative overflow-hidden group">
+            <span className="relative z-10">A</span>
+            <span className="absolute inset-0 bg-[#FF0D4A] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </div>
+          <span className="text-[16px] sm:text-[17px] text-[#111] tracking-tight">
+            Anmol Maurya <span className="text-[#FF0D4A] font-mono text-xs">/ AMY</span>
+          </span>
+        </a>
+
+        {/* Desktop Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-7">
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.id;
+            return (
+              <a
+                key={link.id}
+                href={link.href}
+                onClick={(e) => handleLinkClick(e, link.href)}
+                className={`text-[13px] font-medium transition-colors ${
+                  isActive ? "text-[#FF0D4A] font-semibold" : "text-[#666] hover:text-[#FF0D4A]"
+                }`}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+        </nav>
+
+        {/* Action Button */}
+        <div className="flex items-center gap-2">
           <a
-            href="#hero"
-            className="group flex items-center gap-2.5 text-sm font-semibold tracking-tight text-slate-900 focus:outline-none"
-            data-cursor="pointer"
+            href="#cta"
+            onClick={(e) => handleLinkClick(e, "#cta")}
+            className="w3-tap-h hidden sm:inline-flex items-center gap-2 text-[12px] font-semibold rounded-full flex-shrink-0 transition-all duration-300 hover:bg-[#FF0D4A] hover:shadow-[0_8px_20px_rgba(255,13,74,0.35)]"
+            style={{
+              background: "#111",
+              color: "#F7F7F5",
+              padding: "9px 18px",
+            }}
           >
-            <div className="relative h-8 w-8 overflow-hidden rounded-full border border-blue-400/50 bg-gradient-to-tr from-blue-600 to-sky-400 shadow-md transition-transform duration-300 group-hover:scale-105 flex items-center justify-center">
-              {portfolioData.personal.avatarUrl ? (
-                <Image
-                  src={portfolioData.personal.avatarUrl}
-                  alt={portfolioData.personal.name}
-                  fill
-                  className="object-cover object-center"
-                />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center font-mono text-xs font-bold text-white">
-                  AM
-                </span>
-              )}
-            </div>
-            <span className="hidden sm:inline font-mono text-xs font-semibold tracking-wider text-slate-700 group-hover:text-blue-600 transition-colors">
-              anmol.dev
-            </span>
+            <span>Contact Me</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2 10L10 2M10 2H4M10 2V8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </a>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
-              const isActive = activeSection === link.href.substring(1);
-              return (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  data-cursor="pointer"
-                  className={`relative rounded-full px-3.5 py-1.5 text-xs font-mono tracking-wider uppercase transition-all duration-200 ${
-                    isActive
-                      ? "text-white font-bold"
-                      : "text-slate-600 hover:text-blue-600"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeNavTab"
-                      className="absolute inset-0 rounded-full bg-blue-600 shadow-md shadow-blue-500/20"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10">{link.name}</span>
-                </a>
-              );
-            })}
-          </div>
-
-          {/* Theme Switcher, GitHub CTA & Status Badge */}
-          <div className="flex items-center gap-2.5">
-            {/* 3 Theme Color Circle Buttons (No Text) */}
-            <ThemeSwitcher />
-
-            {/* Status indicator (Desktop only) */}
-            {portfolioData.personal.status.available && (
-              <div className="hidden lg:flex items-center gap-2 rounded-full border border-blue-200/80 bg-blue-50/90 px-3 py-1 text-[11px] font-mono text-blue-700 shadow-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-600" />
-                </span>
-                <span>OPEN FOR ROLES</span>
-              </div>
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0 bg-[#111] text-[#F7F7F5] transition-colors hover:bg-[#FF0D4A]"
+            aria-label="Toggle navigation menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="20" y2="17" />
+              </svg>
             )}
-
-            {/* GitHub Profile Button */}
-            <MagneticButton
-              as="a"
-              href="https://github.com/AmoCreates"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-800 shadow-sm transition-all hover:bg-blue-600 hover:text-white hover:border-blue-600"
-              data-cursor="pointer"
-            >
-              <Github className="h-3.5 w-3.5" />
-              <span>GitHub</span>
-            </MagneticButton>
-
-            {/* Mobile Menu Toggle Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex md:hidden h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 hover:text-blue-600 transition-colors"
-              aria-label="Toggle Navigation Menu"
-            >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
-          </div>
-        </motion.nav>
-      </header>
+          </button>
+        </div>
+      </div>
 
       {/* Mobile Drawer Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            className="fixed inset-0 z-30 flex flex-col justify-center bg-slate-900/90 px-8 py-12 md:hidden"
+      {isMobileMenuOpen && (
+        <div
+          className="pointer-events-auto lg:hidden fixed inset-x-4 top-[78px] bg-[#0E0E10]/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col gap-4 text-white z-[99]"
+        >
+          <div className="flex flex-col gap-3">
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                onClick={(e) => handleLinkClick(e, link.href)}
+                className="text-[16px] font-semibold text-white/80 hover:text-[#FF0D4A] py-2 border-b border-white/5 flex items-center justify-between"
+              >
+                <span>{link.label}</span>
+                <span className="text-xs text-[#FF0D4A] font-mono">↗</span>
+              </a>
+            ))}
+          </div>
+
+          <a
+            href="#cta"
+            onClick={(e) => handleLinkClick(e, "#cta")}
+            className="mt-2 text-center text-[13px] font-semibold rounded-full bg-[#D6003C] text-white py-3 shadow-[0_8px_20px_rgba(255,13,74,0.4)]"
           >
-            <div className="flex flex-col items-center gap-6">
-              {/* Dynamic Status Indicator */}
-              {portfolioData.personal.status.available && (
-                <div className="flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-1.5 text-xs font-mono text-blue-300">
-                  <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
-                  <span>{portfolioData.personal.status.badgeText}</span>
-                </div>
-              )}
-
-              <nav className="flex flex-col items-center gap-4 text-center">
-                {NAV_LINKS.map((link, idx) => (
-                  <motion.a
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.08 }}
-                    className="text-2xl font-mono uppercase font-bold text-white hover:text-blue-400 transition-colors"
-                  >
-                    {link.name}
-                  </motion.a>
-                ))}
-              </nav>
-
-              <div className="mt-6 flex flex-col gap-3 w-full max-w-xs">
-                <a
-                  href="#projects"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/30"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  <span>View Projects</span>
-                </a>
-                <a
-                  href="https://github.com/AmoCreates"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-medium text-white"
-                >
-                  <Github className="h-4 w-4" />
-                  <span>GitHub Profile</span>
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+            Start a Conversation ↗
+          </a>
+        </div>
+      )}
+    </header>
   );
 }
