@@ -1,8 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function TestimonialsSection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const headingRef = useRef<HTMLDivElement | null>(null);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+
   const testimonials = [
     {
       quote:
@@ -27,8 +33,61 @@ export function TestimonialsSection() {
     },
   ];
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    const heading = headingRef.current;
+    const cards = cardsRef.current.filter(
+      (c): c is HTMLDivElement => c !== null
+    );
+
+    if (!section || !heading || cards.length === 0) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Heading slides in from the left
+      gsap.fromTo(
+        heading,
+        { x: -50, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 70%",
+            once: true,
+          },
+        }
+      );
+
+      // Cards stagger in with scale + opacity
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 40, scale: 0.92 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.7,
+          stagger: 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 55%",
+            once: true,
+          },
+        }
+      );
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       data-theme-bg="#111111"
       data-theme-fg="#F7F7F5"
       className="py-24 lg:py-0 bg-[#111111] text-[#F7F7F5]"
@@ -36,7 +95,7 @@ export function TestimonialsSection() {
       <div className="lg:min-h-screen lg:flex lg:items-center">
         <div className="w-full max-w-[1320px] mx-auto px-6 sm:px-9 grid grid-cols-1 lg:grid-cols-[.7fr_1.3fr] gap-12 lg:gap-[60px] items-center">
           {/* Left Column: Heading & Callout */}
-          <div>
+          <div ref={headingRef}>
             <div className="inline-flex items-center gap-3 mb-6 font-mono select-none">
               <span className="text-[12px] font-bold text-[#FF0D4A]">07</span>
               <span className="text-[11px] font-bold tracking-[.14em] text-[#999] uppercase">
@@ -116,14 +175,17 @@ export function TestimonialsSection() {
                 // Absolute positioning for desktop orbital spread
                 const desktopStyles: React.CSSProperties =
                   idx === 0
-                    ? { left: "4%", top: "4%" }
+                    ? { right: "4%", bottom: "4%" }
                     : idx === 1
-                    ? { right: "2%", top: "28%" }
-                    : { left: "10%", bottom: "4%" };
+                    ? { left: "32%", top: "4%" }
+                    : { left: "4%", bottom: "4%" };
 
                 return (
                   <div
                     key={t.name}
+                    ref={(el) => {
+                      cardsRef.current[idx] = el;
+                    }}
                     className="relative lg:absolute lg:w-[320px] transition-all duration-300 hover:scale-[1.02]"
                     style={desktopStyles}
                   >
@@ -153,7 +215,7 @@ export function TestimonialsSection() {
                           color: isLight ? "#595959" : isAccent ? "rgba(255,255,255,.75)" : "#9a9a9a",
                         }}
                       >
-                        “
+                        &ldquo;
                       </div>
 
                       <p

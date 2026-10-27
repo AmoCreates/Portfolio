@@ -4,6 +4,8 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { ScrollProgressBar } from "@/components/ui/ScrollProgressBar";
+import { ScrollColorTransition } from "@/components/ui/ScrollColorTransition";
+import { FloatingStars } from "@/components/ui/FloatingStars";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { portfolioData } from "@/config/portfolioData";
@@ -49,6 +51,8 @@ export default function RootLayout({
           <SmoothScroll>
             {/* Top Glowing Scroll Indicator & Precision Cursor */}
             <ScrollProgressBar />
+            <ScrollColorTransition />
+            <FloatingStars />
             <CustomCursor />
 
             {/* Application Shell */}

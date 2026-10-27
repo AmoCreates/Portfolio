@@ -1,7 +1,55 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { portfolioData } from "@/config/portfolioData";
+
+/* ─── Scramble Text for "Have an idea?" heading ─── */
+function ScrambleHeading({
+  text,
+  isInView,
+}: {
+  text: string;
+  isInView: boolean;
+}) {
+  const [displayText, setDisplayText] = useState(text);
+  const hasRun = useRef(false);
+
+  useEffect(() => {
+    if (!isInView || hasRun.current) return;
+    hasRun.current = true;
+
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*@!?";
+    const startTime = performance.now();
+    const duration = 700;
+    let animId: number;
+
+    const update = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const revealedLength = Math.floor(progress * text.length);
+      const scrambled = text
+        .split("")
+        .map((char, index) => {
+          if (char === " " || char === "'" || char === "\n") return char;
+          if (index < revealedLength) return text[index];
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join("");
+      setDisplayText(scrambled);
+      if (progress < 1) {
+        animId = requestAnimationFrame(update);
+      } else {
+        setDisplayText(text);
+      }
+    };
+
+    animId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(animId);
+  }, [isInView, text]);
+
+  return <>{displayText}</>;
+}
 
 export function CtaSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,6 +58,72 @@ export function CtaSection() {
   const [fileLink, setFileLink] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [statusMsg, setStatusMsg] = useState("");
+  const [isInView, setIsInView] = useState(false);
+
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const tagRef = useRef<HTMLDivElement | null>(null);
+  const headlineRef = useRef<HTMLHeadingElement | null>(null);
+  const descRef = useRef<HTMLParagraphElement | null>(null);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
+
+  /* ─── GSAP entrance animations ─── */
+  useEffect(() => {
+    const section = sectionRef.current;
+    const box = boxRef.current;
+    const tag = tagRef.current;
+    const headline = headlineRef.current;
+    const desc = descRef.current;
+    const btn = btnRef.current;
+
+    if (!section || !box || !tag || !headline || !desc || !btn) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // The dark floating box scales up from 0.88 with a blur fade
+      gsap.fromTo(
+        box,
+        { scale: 0.88, opacity: 0, filter: "blur(12px)", y: 60 },
+        {
+          scale: 1,
+          opacity: 1,
+          filter: "blur(0px)",
+          y: 0,
+          duration: 1.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            end: "top 30%",
+            scrub: false,
+            once: true,
+            onEnter: () => setIsInView(true),
+          },
+        }
+      );
+
+      // Stagger inner elements
+      gsap.fromTo(
+        [tag, headline, desc, btn],
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 65%",
+            once: true,
+          },
+        }
+      );
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +159,7 @@ export function CtaSection() {
 
   return (
     <section
+      ref={sectionRef}
       id="cta"
       data-theme-bg="#F7F7F5"
       data-theme-fg="#111111"
@@ -55,35 +170,47 @@ export function CtaSection() {
       >
         {/* Web3Task signature floating dark rounded box */}
         <div
+          ref={boxRef}
           className="relative grid place-items-center overflow-hidden w-full lg:w-[72%] min-h-[500px] lg:h-[62vh] rounded-[28px] sm:rounded-[36px] bg-[#111] text-[#F7F7F5] p-8 sm:p-14 lg:p-16 border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.25)]"
+          style={{ willChange: "transform, opacity, filter" }}
         >
           {/* Pulsating Aurora Glow */}
           <div
             aria-hidden="true"
-            className="absolute top-1/2 left-1/2 w-[680px] h-[680px] sm:w-[860px] sm:h-[860px] pointer-events-none rounded-full z-0 animate-w3-aurora"
+            className="absolute top-1/2 left-1/2 w-[680px] h-[680px] sm:w-[860px] sm:h-[860px] pointer-events-none rounded-full z-0"
             style={{
               background:
                 "radial-gradient(circle, rgba(255,13,74,.18) 0%, rgba(255,13,74,.11) 28%, rgba(255,13,74,.045) 52%, rgba(255,13,74,0) 80%)",
+              animation: "w3aurora 8s ease-in-out infinite alternate",
+              transform: "translate(-50%, -50%)",
             }}
           />
+
+          {/* Floating particles inside the CTA box */}
+          <CtaParticles />
 
           {/* Inner Content */}
           <div className="relative z-10 flex flex-col items-center text-center max-w-[700px] mx-auto">
             {/* Beacon Tag */}
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold tracking-[.16em] text-[#999] mb-6 select-none uppercase">
-              <span className="w-2 h-2 rounded-full bg-[#FF0D4A] shadow-[0_0_10px_#FF0D4A] animate-w3-pulse" />
+            <div
+              ref={tagRef}
+              className="inline-flex items-center gap-2 text-[11px] font-mono font-bold tracking-[.16em] text-[#999] mb-6 select-none uppercase"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#FF0D4A] shadow-[0_0_10px_#FF0D4A]" style={{ animation: "w3pulse 2s ease-in-out infinite" }} />
               <span>HAVE AN IDEA OR ROLE?</span>
             </div>
 
             {/* Giant Web3Task-style dual-color headline */}
             <h2
+              ref={headlineRef}
               className="m-0 mb-6 font-extrabold text-white tracking-[-0.04em] leading-[1.02]"
               style={{
                 fontFamily: "var(--font-manrope), sans-serif",
                 fontSize: "clamp(38px, 6vw, 84px)",
               }}
             >
-              Let&apos;s build<br />
+              <ScrambleHeading text="Let's build" isInView={isInView} />
+              <br />
               <span
                 style={{
                   background: "linear-gradient(135deg, #ffffff 30%, #FF0D4A 100%)",
@@ -91,11 +218,12 @@ export function CtaSection() {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                something useful.
+                <ScrambleHeading text="something useful." isInView={isInView} />
               </span>
             </h2>
 
             <p
+              ref={descRef}
               className="text-[#999] leading-relaxed max-w-[500px] m-0 mb-9"
               style={{ fontSize: "clamp(15px, 1.4vw, 18px)" }}
             >
@@ -104,6 +232,7 @@ export function CtaSection() {
 
             {/* Pill CTA button with red circle arrow icon */}
             <button
+              ref={btnRef}
               onClick={() => setIsModalOpen(true)}
               className="w3-tap-h inline-flex items-center gap-3.5 rounded-full transition-all duration-300 hover:scale-[1.03] shadow-[0_12px_30px_rgba(0,0,0,0.4)]"
               style={{
@@ -141,7 +270,7 @@ export function CtaSection() {
           }}
         >
           <div
-            className="relative my-auto w-full max-w-[1080px] max-h-[92vh] overflow-y-auto rounded-[28px] bg-[#18181B] border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7)] text-white"
+            className="relative my-auto w-full max-w-[1080px] max-h-[92vh] overflow-y-auto rounded-[28px] bg-[#18181B] border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7)] text-white animate-modalIn"
             style={{
               fontFamily: "var(--font-manrope), sans-serif",
             }}
@@ -330,5 +459,94 @@ export function CtaSection() {
         </div>
       )}
     </section>
+  );
+}
+
+/* ─── Tiny floating particles inside the CTA dark box ─── */
+function CtaParticles() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const parent = canvas.parentElement;
+    if (!parent) return;
+
+    let w = 0;
+    let h = 0;
+    let animId: number;
+
+    interface Particle {
+      x: number;
+      y: number;
+      r: number;
+      alpha: number;
+      vx: number;
+      vy: number;
+    }
+
+    let particles: Particle[] = [];
+
+    function resize() {
+      if (!parent) return;
+      w = parent.clientWidth;
+      h = parent.clientHeight;
+      canvas!.width = w;
+      canvas!.height = h;
+
+      const count = Math.min(Math.floor((w * h) / 12000), 40);
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 0.4 + Math.random() * 1.2,
+        alpha: 0.1 + Math.random() * 0.35,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -0.05 - Math.random() * 0.15,
+      }));
+    }
+
+    function render() {
+      ctx!.clearRect(0, 0, w, h);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.y < -5) { p.y = h + 5; p.x = Math.random() * w; }
+        if (p.x < -5) p.x = w + 5;
+        if (p.x > w + 5) p.x = -5;
+
+        ctx!.globalAlpha = p.alpha;
+        ctx!.fillStyle = "rgba(255,255,255,0.8)";
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+
+      ctx!.globalAlpha = 1;
+      animId = requestAnimationFrame(render);
+    }
+
+    resize();
+    animId = requestAnimationFrame(render);
+
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(parent);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none absolute inset-0 z-[1]"
+      aria-hidden="true"
+    />
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface ServiceItem {
   num: string;
@@ -75,6 +75,8 @@ function ScrambleText({
 export function ServicesSection() {
   const [activeRow, setActiveRow] = useState<number>(0);
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [isInView, setIsInView] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   const services: ServiceRow[] = [
     {
@@ -175,19 +177,32 @@ export function ServicesSection() {
     },
   ];
 
-  // Auto-cycle open one by one every 3 seconds when NOT hovering
   useEffect(() => {
-    if (isHovering) return;
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.2 }
+    );
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isInView || isHovering) return;
 
     const interval = setInterval(() => {
       setActiveRow((prev) => (prev + 1) % services.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [isHovering, services.length]);
+  }, [isHovering, isInView, services.length]);
 
   return (
     <section
+      ref={sectionRef}
       id="services"
       data-theme-bg="#ffffff"
       data-theme-fg="#111111"

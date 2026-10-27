@@ -1,10 +1,126 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function BelieveSection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const cadBoxRef = useRef<HTMLDivElement | null>(null);
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  const notesRef = useRef<HTMLDivElement | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const metaBarRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const cadBox = cadBoxRef.current;
+    const heading = headingRef.current;
+    const notes = notesRef.current;
+    const svg = svgRef.current;
+    const metaBar = metaBarRef.current;
+
+    if (!section || !cadBox || !heading || !notes || !svg || !metaBar) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Entire CAD box rises in
+      gsap.fromTo(
+        cadBox,
+        { y: 80, opacity: 0, scale: 0.96 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 75%",
+            once: true,
+          },
+        }
+      );
+
+      // Heading slides in from left
+      gsap.fromTo(
+        heading,
+        { x: -40, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 60%",
+            once: true,
+          },
+        }
+      );
+
+      // Notes fade in
+      gsap.fromTo(
+        notes,
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          delay: 0.2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 55%",
+            once: true,
+          },
+        }
+      );
+
+      // SVG draws in — animate the isometric layers with stagger
+      const layers = svg.querySelectorAll("g");
+      gsap.fromTo(
+        layers,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.12,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 50%",
+            once: true,
+          },
+        }
+      );
+
+      // Bottom metadata bar slides up
+      gsap.fromTo(
+        metaBar,
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: metaBar,
+            start: "top 95%",
+            once: true,
+          },
+        }
+      );
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="believe"
       data-theme-bg="#F7F7F5"
       data-theme-fg="#111111"
@@ -12,10 +128,11 @@ export function BelieveSection() {
       style={{ perspective: "1600px" }}
     >
       <div className="max-w-[1320px] mx-auto px-6 sm:px-9">
-        {/* CAD Blueprint Blueprint Box */}
+        {/* CAD Blueprint Box */}
         <div
+          ref={cadBoxRef}
           className="w3-cad-grid rounded-none sm:rounded-xl border border-black/20 shadow-[0_30px_80px_rgba(17,17,17,.09)] overflow-hidden"
-          style={{ transformStyle: "preserve-3d" }}
+          style={{ transformStyle: "preserve-3d", willChange: "transform, opacity" }}
         >
           {/* Top Drawing Header */}
           <div
@@ -35,6 +152,7 @@ export function BelieveSection() {
             {/* Left Content */}
             <div className="flex flex-col justify-center px-6 sm:px-8 pt-10 pb-10 lg:py-14 border-b lg:border-b-0 lg:border-r border-black/[0.12]">
               <h2
+                ref={headingRef}
                 className="m-0 text-[#111] font-bold tracking-[-0.05em] leading-[0.98]"
                 style={{
                   fontFamily: "var(--font-manrope), sans-serif",
@@ -45,7 +163,7 @@ export function BelieveSection() {
                 <span className="block text-[#7a7a7a]">not just a coder.</span>
               </h2>
 
-              <div className="mt-8 pt-4 border-t border-black/[0.14]">
+              <div ref={notesRef} className="mt-8 pt-4 border-t border-black/[0.14]">
                 <div className="text-[10px] font-mono tracking-[.18em] uppercase text-[#8a8a8a] font-bold">
                   SPECIFICATION NOTES
                 </div>
@@ -67,7 +185,7 @@ export function BelieveSection() {
 
             {/* Right CAD Isometric Blueprint SVG Diagram */}
             <div className="flex items-center justify-center px-3 sm:px-6 py-8 overflow-hidden select-none">
-              <svg viewBox="0 0 900 600" className="block w-full h-auto max-w-[820px]">
+              <svg ref={svgRef} viewBox="0 0 900 600" className="block w-full h-auto max-w-[820px]">
                 {/* Vertical Projection Guide Axis Lines */}
                 <path d="M 305 106 L 305 230" fill="none" stroke="rgba(17,17,17,.24)" strokeWidth="1" strokeDasharray="4 6" />
                 <path d="M 595 106 L 595 230" fill="none" stroke="rgba(17,17,17,.24)" strokeWidth="1" strokeDasharray="4 6" />
@@ -169,7 +287,7 @@ export function BelieveSection() {
           </div>
 
           {/* Bottom CAD Metadata Table Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-black/[0.16] font-mono select-none">
+          <div ref={metaBarRef} className="grid grid-cols-2 sm:grid-cols-4 border-t border-black/[0.16] font-mono select-none">
             <div className="px-6 sm:px-8 py-4">
               <div className="text-[9.5px] tracking-[.16em] uppercase text-[#9a9a9a]">ENGINEER</div>
               <div className="text-[13px] text-[#222] font-semibold mt-1">Anmol Maurya</div>

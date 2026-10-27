@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { portfolioData } from "@/config/portfolioData";
 import { Project } from "@/types/portfolio";
 import { ProjectModal } from "./ProjectModal";
@@ -8,6 +10,8 @@ import { ProjectModal } from "./ProjectModal";
 export function ProjectsSection() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [activeModalProject, setActiveModalProject] = useState<Project | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const categories = ["All", "Real-Time", "AI & Cloud", "Full-Stack"];
 
@@ -19,6 +23,46 @@ export function ProjectsSection() {
       return p.category === "Full-Stack" || p.category === "E-Commerce & Frontend";
     return true;
   });
+  const projectIds = filteredProjects.map((project) => project.id).join("|");
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const cards = cardRefs.current.slice(0, filteredProjects.length).filter(
+      (card): card is HTMLDivElement => card !== null
+    );
+    if (!section || cards.length < 2) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const media = gsap.matchMedia();
+    const context = gsap.context(() => {
+      media.add("(min-width: 1024px)", () => {
+        cards.slice(0, -1).forEach((card, index) => {
+          gsap.fromTo(
+            card,
+            { scale: 1, y: 0, opacity: 1 },
+            {
+              scale: 0.94,
+              y: -18,
+              opacity: 0.65,
+              ease: "none",
+              scrollTrigger: {
+                trigger: cards[index + 1],
+                start: "top 90%",
+                end: "top 100px",
+                scrub: true,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+        });
+      });
+    }, section);
+
+    return () => {
+      context.revert();
+      media.revert();
+    };
+  }, [projectIds]);
 
   // Card themes matching Web3Task cards
   const cardThemes = [
@@ -98,6 +142,7 @@ export function ProjectsSection() {
 
   return (
     <section
+      ref={sectionRef}
       id="projects"
       data-theme-bg="#F7F7F5"
       data-theme-fg="#111111"
@@ -159,6 +204,9 @@ export function ProjectsSection() {
             return (
               <div
                 key={project.id}
+                ref={(element) => {
+                  cardRefs.current[index] = element;
+                }}
                 style={{
                   background: theme.bg,
                   color: theme.fg,
@@ -167,9 +215,10 @@ export function ProjectsSection() {
                   marginBottom: isLast ? 0 : "30px",
                   boxShadow: "0 -8px 30px rgba(0,0,0,.12), 0 24px 60px rgba(0,0,0,.18)",
                   transformOrigin: "50% 0%",
+                  willChange: "transform, opacity",
                   zIndex: index + 1,
                 }}
-                className="group grid grid-cols-1 lg:grid-cols-[.78fr_1.22fr] rounded-[30px] overflow-hidden min-h-[560px] transition-all duration-300 border border-white/[0.04]"
+                className="group grid grid-cols-1 lg:grid-cols-[.78fr_1.22fr] rounded-[30px] overflow-hidden min-h-[560px] border border-white/[0.04]"
               >
                 {/* Left Column: Information & Metadata */}
                 <div

@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function StudioSection() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   const cards = [
     {
@@ -38,8 +42,41 @@ export function StudioSection() {
     },
   ];
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    const grid = gridRef.current;
+    if (!section || !grid) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      const gridCards = grid.querySelectorAll("[data-studio-card]");
+
+      gsap.fromTo(
+        gridCards,
+        { opacity: 0, y: 50, scale: 0.94 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 65%",
+            once: true,
+          },
+        }
+      );
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="studio"
       data-theme-bg="#111111"
       data-theme-fg="#F7F7F5"
@@ -58,13 +95,14 @@ export function StudioSection() {
         </div>
 
         {/* Bento Grid Spotlight Layout matching Web3Task */}
-        <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-5 md:h-[560px]">
-          {cards.map((card, i) => {
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-5 md:h-[560px]">
+          {cards.map((card) => {
             const isHovered = hoveredCard === card.id;
 
             return (
               <div
                 key={card.id}
+                data-studio-card
                 onMouseEnter={() => setHoveredCard(card.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 tabIndex={0}
@@ -106,7 +144,7 @@ export function StudioSection() {
                   <div className="flex items-center gap-2 mb-2 font-mono text-[11px] font-bold tracking-[.14em] text-[#e8e8e8]">
                     <span>{card.title}</span>
                     {card.hasBeacon && (
-                      <span className="w-2 h-2 rounded-full bg-[#FF0D4A] shadow-[0_0_8px_#FF0D4A] animate-w3-pulse inline-block" />
+                      <span className="w-2 h-2 rounded-full bg-[#FF0D4A] shadow-[0_0_8px_#FF0D4A] inline-block" style={{ animation: "w3pulse 2s ease-in-out infinite" }} />
                     )}
                   </div>
 
