@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { portfolioData } from "@/config/portfolioData";
@@ -74,6 +75,15 @@ export function ProjectsSection() {
   ];
 
   // Specific animated radiant glow configs matching Web3Task projects (e.g. TalesFM red, Traverse green, etc.)
+  const projectImages: Record<string, string> = {
+    "rydex-vehicle-booking": "/projects/rydex.png",
+    "genwebai-builder": "/projects/genwebai.png",
+    "ai-virtual-assistant": "/projects/virtualassistant.jpg",
+    "scatch-ecommerce": "/projects/scatch.png",
+    "k72-brand-designing": "/projects/k72.webp",
+    "realtime-multiplayer-chess-engine": "/projects/chess.webp",
+  };
+
   const getVisualTheme = (id: string, index: number) => {
     if (id.includes("rydex")) {
       return {
@@ -342,10 +352,15 @@ export function ProjectsSection() {
                       color: "#ffffff",
                     }}
                   >
-                    <div
-                      className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${visual.iconGradient} flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-black/40`}
-                    >
-                      {project.title.charAt(0)}
+                    <div className="w-20 h-20 overflow-hidden rounded-2xl border border-white/15 bg-white/10 shadow-lg shadow-black/40">
+                      <Image
+                        src={projectImages[project.id]}
+                        alt={`${project.title.split("|")[0].trim()} project badge`}
+                        width={80}
+                        height={80}
+                        sizes="80px"
+                        className="h-full w-full object-cover"
+                      />
                     </div>
 
                     <div>

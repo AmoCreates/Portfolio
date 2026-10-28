@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { HeroCanvas } from "@/components/ui/HeroCanvas";
 import { portfolioData } from "@/config/portfolioData";
 
-const WORDS = ["BUILD", "SHIP", "SCALE", "ARCHITECT"];
+const WORDS = ["AMY", "2.0", "BUILD", "SHIP", "SCALE", "ARCHITECT"];
 
 function ScrambleText({ text }: { text: string }) {
   const [isHovered, setIsHovered] = useState(false);
