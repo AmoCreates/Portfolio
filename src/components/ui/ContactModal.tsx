@@ -68,14 +68,14 @@ export function ContactModal() {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-[200] flex items-center justify-center overflow-y-auto p-3 sm:p-6 bg-black/75 backdrop-blur-md"
       onClick={(e) => {
         if (e.target === e.currentTarget) closeContactModal();
       }}
     >
       {/* Main Detailed Modal Frame matching Web3Task */}
       <div
-        className="relative w-full max-w-[1040px] max-h-[92vh] overflow-y-auto overscroll-contain rounded-[28px] bg-[#141416] border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7)] text-white"
+        className="relative my-auto w-full max-w-[1080px] max-h-[92vh] overflow-y-auto overscroll-contain rounded-[28px] bg-[#18181B] border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7)] text-white animate-modalIn"
         style={{ fontFamily: "var(--font-manrope), sans-serif" }}
       >
         {/* Top-Right Circular Close Button */}

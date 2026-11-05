@@ -19,6 +19,8 @@ export function Footer() {
 
   return (
     <footer
+      data-theme-bg="#0d0d0d"
+      data-theme-fg="#F7F7F5"
       style={{
         background: "#0d0d0d",
         color: "#F7F7F5",

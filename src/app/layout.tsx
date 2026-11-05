@@ -9,6 +9,8 @@ import { FloatingStars } from "@/components/ui/FloatingStars";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { portfolioData } from "@/config/portfolioData";
+import { ContactModalProvider } from "@/context/ContactModalContext";
+import { ContactModal } from "@/components/ui/ContactModal";
 
 export const metadata: Metadata = {
   title: `${portfolioData.personal.name} - Full-Stack Software Engineer & Real-Time Architect`,
@@ -48,20 +50,23 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth overflow-x-clip">
       <body className="min-h-screen antialiased bg-[#0E0E10] text-[#F7F7F5] overflow-x-clip selection:bg-[#FF0D4A] selection:text-white">
         <ToastProvider>
-          <SmoothScroll>
-            {/* Top Glowing Scroll Indicator & Precision Cursor */}
-            <ScrollProgressBar />
-            <ScrollColorTransition />
-            <FloatingStars />
-            <CustomCursor />
+          <ContactModalProvider>
+            <SmoothScroll>
+              {/* Top Glowing Scroll Indicator & Precision Cursor */}
+              <ScrollProgressBar />
+              <ScrollColorTransition />
+              <FloatingStars />
+              <CustomCursor />
 
-            {/* Application Shell */}
-            <div className="relative z-10 flex min-h-screen flex-col justify-between overflow-x-clip">
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-          </SmoothScroll>
+              {/* Application Shell */}
+              <div className="relative z-10 flex min-h-screen flex-col justify-between overflow-x-clip">
+                <Navbar />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+              <ContactModal />
+            </SmoothScroll>
+          </ContactModalProvider>
         </ToastProvider>
       </body>
     </html>

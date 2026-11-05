@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { HeroCanvas } from "@/components/ui/HeroCanvas";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 import { portfolioData } from "@/config/portfolioData";
 
 const WORDS = ["AMY", "2.0", "BUILD", "SHIP", "SCALE", "ARCHITECT"];
@@ -168,9 +169,11 @@ export function HeroSection() {
             </p>
 
             <div className="flex flex-wrap gap-4 mt-6 sm:mt-8">
-              <a
+              <MagneticButton
+                as="a"
                 href="#cta"
-                className="w3-tap-h inline-flex items-center gap-2.5 text-[14px] font-semibold rounded-full text-white transition-all duration-300"
+                strength={0.265}
+                className="inline-flex items-center gap-2.5 text-[14px] font-semibold rounded-full text-white transition-[background-color,color,box-shadow] duration-300"
                 style={{
                   background: "#D6003C",
                   padding: "clamp(11px, 1.8vh, 15px) clamp(20px, 1.9vw, 28px)",
@@ -193,13 +196,12 @@ export function HeroSection() {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </a>
+              </MagneticButton>
 
               <a
                 href="#projects"
-                className="w3-tap-h inline-flex items-center text-[14px] font-semibold rounded-full text-[#F7F7F5] transition-all duration-300 hover:bg-[#F7F7F5] hover:text-[#111]"
+                className="w3-tap-h inline-flex items-center text-[14px] font-semibold rounded-full bg-transparent text-[#F7F7F5] transition-all duration-300 hover:bg-[#F7F7F5] hover:text-[#111]"
                 style={{
-                  background: "transparent",
                   border: "1px solid rgba(247, 247, 245, .2)",
                   padding: "clamp(11px, 1.8vh, 15px) clamp(18px, 1.7vw, 24px)",
                 }}

@@ -36,6 +36,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-theme-bg] {
+  background-color: transparent !important;
+}
+
 ::selection {
   background-color: #FF0D4A;
   color: #ffffff;

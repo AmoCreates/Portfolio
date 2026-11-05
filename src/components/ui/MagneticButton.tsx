@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useRef } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,37 +24,35 @@ export function MagneticButton({
   target,
   rel,
   onClick,
+  style,
   ...props
 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const x = useSpring(useMotionValue(0), { stiffness: 220, damping: 5, mass: 0.3 });
+  const y = useSpring(useMotionValue(0), { stiffness: 220, damping: 5, mass: 0.3 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const { clientX, clientY } = e;
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!ref.current || e.pointerType !== "mouse") return;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
     const centerX = left + width / 2;
     const centerY = top + height / 2;
 
-    const x = (clientX - centerX) * strength;
-    const y = (clientY - centerY) * strength;
-
-    setPosition({ x, y });
+    x.set((e.clientX - centerX) * strength);
+    y.set((e.clientY - centerY) * strength);
   };
 
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
+  const handlePointerLeave = () => {
+    x.set(0);
+    y.set(0);
   };
 
   const Component = as === "a" ? motion.a : as === "button" ? motion.button : motion.div;
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 180, damping: 15, mass: 0.2 }}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
       className="inline-block"
     >
       <Component
@@ -63,13 +61,14 @@ export function MagneticButton({
         rel={rel}
         onClick={onClick}
         className={cn(
-          "relative inline-flex items-center justify-center overflow-hidden rounded-xl font-medium transition-all duration-300",
+          "relative inline-flex items-center justify-center overflow-hidden rounded-xl font-medium transition-[background-color,color,border-color,box-shadow] duration-300",
           className
         )}
         {...(props as any)}
+        style={{ ...style, x, y }}
       >
         {children}
       </Component>
-    </motion.div>
+    </div>
   );
 }

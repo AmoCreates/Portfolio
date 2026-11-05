@@ -3,11 +3,14 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 
 export function TestimonialsSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const headingRef = useRef<HTMLDivElement | null>(null);
+  const cardsStageRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const panelsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const testimonials = [
     {
@@ -36,13 +39,18 @@ export function TestimonialsSection() {
   useEffect(() => {
     const section = sectionRef.current;
     const heading = headingRef.current;
+    const cardsStage = cardsStageRef.current;
     const cards = cardsRef.current.filter(
       (c): c is HTMLDivElement => c !== null
     );
+    const panels = panelsRef.current.filter(
+      (panel): panel is HTMLDivElement => panel !== null
+    );
 
-    if (!section || !heading || cards.length === 0) return;
+    if (!section || !heading || !cardsStage || cards.length === 0) return;
 
     gsap.registerPlugin(ScrollTrigger);
+    const media = gsap.matchMedia();
 
     const ctx = gsap.context(() => {
       // Heading slides in from the left
@@ -62,27 +70,170 @@ export function TestimonialsSection() {
         }
       );
 
-      // Cards stagger in with scale + opacity
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 40, scale: 0.92 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.7,
-          stagger: 0.15,
-          ease: "power2.out",
+      const mobileSlots = [
+        { x: 0, y: 0, scale: 1.12, zIndex: 3 },
+        { x: 0, y: 82, scale: 0.96, zIndex: 2 },
+        { x: 0, y: 164, scale: 0.96, zIndex: 1 },
+      ];
+      const initialSlots = [1, 0, 2];
+      const cardColors = [
+        { red: 245, green: 245, blue: 245 },
+        { red: 255, green: 13, blue: 74 },
+        { red: 236, green: 236, blue: 231 },
+      ];
+
+      const getShadow = (cardIndex: number, focus: number) => {
+        const color = cardColors[cardIndex];
+        const glow = `rgba(${color.red}, ${color.green}, ${color.blue}, ${0.38 * focus})`;
+        return `0 18px 40px rgba(0,0,0,0.18), 0 0 ${34 * focus}px ${glow}`;
+      };
+
+      const animateMobileCards = () => {
+        const order = [...initialSlots];
+
+        cards.forEach((card, index) => {
+          const slot = mobileSlots[order[index]];
+          gsap.set(card, {
+            xPercent: -50,
+            y: slot.y,
+            x: slot.x,
+            scale: slot.scale,
+            zIndex: slot.zIndex,
+            opacity: 1,
+          });
+          if (panels[index]) {
+            gsap.set(panels[index], {
+              boxShadow: getShadow(index, order[index] === 0 ? 1 : 0),
+            });
+          }
+        });
+
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: cardsStage,
+            start: "top 24%",
+            end: () => `+=${window.innerHeight * 2}`,
+            scrub: 0.7,
+            pin: cardsStage,
+            pinSpacing: true,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        let timelinePosition = 0;
+        timeline.to({}, { duration: 0.55 });
+        timelinePosition += 0.55;
+
+        for (let step = 0; step < 2; step++) {
+          const nextOrder = order.map((slotIndex) => (slotIndex + 2) % 3);
+          cards.forEach((card, index) => {
+            const slot = mobileSlots[nextOrder[index]];
+            timeline.to(
+              card,
+              {
+                x: slot.x,
+                y: slot.y,
+                scale: slot.scale,
+                zIndex: slot.zIndex,
+                duration: 1,
+                ease: "power2.inOut",
+              },
+              timelinePosition
+            );
+            if (panels[index]) {
+              timeline.to(
+                panels[index],
+                {
+                  boxShadow: getShadow(index, nextOrder[index] === 0 ? 1 : 0),
+                  duration: 1,
+                },
+                timelinePosition
+              );
+            }
+          });
+          timelinePosition += 1;
+          timeline.to({}, { duration: 0.55 });
+          timelinePosition += 0.55;
+          order.splice(0, order.length, ...nextOrder);
+        }
+      };
+
+      media.add("(min-width: 1024px)", () => {
+        const initialAngles = [30, -90, 150];
+        const rotation = { degrees: 0 };
+        const renderOrbit = () => {
+          const centerY = cardsStage.clientHeight * 0.52;
+          const radiusX = Math.min(cardsStage.clientWidth * 0.25, 185);
+          const radiusY = 185;
+          const focusDistances: number[] = [];
+
+          cards.forEach((card, index) => {
+            const radians = ((initialAngles[index] + rotation.degrees) * Math.PI) / 180;
+            const x = Math.cos(radians) * radiusX;
+            const y = centerY + Math.sin(radians) * radiusY - card.offsetHeight / 2;
+            const angleFromFocus =
+              ((initialAngles[index] + rotation.degrees + 90) % 360 + 360) % 360;
+            const distance = Math.abs(angleFromFocus > 180 ? angleFromFocus - 360 : angleFromFocus);
+            focusDistances[index] = distance;
+            const focus = Math.max(0, 1 - distance / 120);
+            gsap.set(card, {
+              xPercent: -50,
+              x,
+              y,
+              scale: 0.92 + focus * 0.26,
+              zIndex: 1,
+              opacity: 1,
+            });
+            if (panels[index]) {
+              gsap.set(panels[index], { boxShadow: getShadow(index, focus) });
+            }
+          });
+
+          const frontToBack = [...cards.keys()].sort(
+            (a, b) => focusDistances[a] - focusDistances[b]
+          );
+          frontToBack.forEach((cardIndex, index) => {
+            gsap.set(cards[cardIndex], { zIndex: cards.length - index });
+          });
+        };
+
+        renderOrbit();
+        const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: section,
-            start: "top 55%",
-            once: true,
+            start: "top top",
+            end: () => `+=${window.innerHeight * 2}`,
+            scrub: 0.7,
+            pin: section,
+            pinSpacing: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
           },
+        });
+
+        timeline.to({}, { duration: 0.55 });
+        for (let step = 1; step <= 2; step++) {
+          timeline.to(rotation, {
+            degrees: step * 120,
+            duration: 1,
+            ease: "none",
+            onUpdate: renderOrbit,
+          });
+          timeline.to({}, { duration: 0.55 });
         }
-      );
+
+        return () => {
+          timeline.scrollTrigger?.kill();
+          timeline.kill();
+        };
+      });
+      media.add("(max-width: 1023px)", animateMobileCards);
     }, section);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      media.revert();
+    };
   }, []);
 
   return (
@@ -119,9 +270,11 @@ export function TestimonialsSection() {
               I don&apos;t just deliver a repository. I help teams architect clearly, eliminate latency bottlenecks, and ship with production confidence.
             </p>
 
-            <a
+            <MagneticButton
+              as="a"
               href="#cta"
-              className="w3-tap-h inline-flex items-center gap-2.5 text-[14px] font-semibold rounded-full text-white transition-all duration-300"
+              strength={0.265}
+              className="inline-flex items-center gap-2.5 text-[14px] font-semibold rounded-full text-white transition-[background-color,color,box-shadow] duration-300"
               style={{
                 background: "#D6003C",
                 padding: "14px 28px",
@@ -144,7 +297,7 @@ export function TestimonialsSection() {
                   strokeLinejoin="round"
                 />
               </svg>
-            </a>
+            </MagneticButton>
           </div>
 
           {/* Right Column: Orbital Dashed Track with Testimonial Cards */}
@@ -167,18 +320,13 @@ export function TestimonialsSection() {
             />
 
             {/* Cards */}
-            <div className="flex flex-col gap-5 lg:block">
+            <div
+              ref={cardsStageRef}
+              className="relative h-[320px] w-full lg:h-[580px]"
+            >
               {testimonials.map((t, idx) => {
                 const isAccent = t.theme === "accent";
                 const isLight = t.theme === "light";
-
-                // Absolute positioning for desktop orbital spread
-                const desktopStyles: React.CSSProperties =
-                  idx === 0
-                    ? { right: "4%", bottom: "4%" }
-                    : idx === 1
-                    ? { left: "32%", top: "4%" }
-                    : { left: "4%", bottom: "4%" };
 
                 return (
                   <div
@@ -186,10 +334,12 @@ export function TestimonialsSection() {
                     ref={(el) => {
                       cardsRef.current[idx] = el;
                     }}
-                    className="relative lg:absolute lg:w-[320px] transition-all duration-300 hover:scale-[1.02]"
-                    style={desktopStyles}
+                    className="absolute left-1/2 top-0 w-full max-w-[320px]"
                   >
                     <div
+                      ref={(el) => {
+                        panelsRef.current[idx] = el;
+                      }}
                       className="rounded-[22px] p-6 sm:p-7 select-none"
                       style={{
                         background: isAccent

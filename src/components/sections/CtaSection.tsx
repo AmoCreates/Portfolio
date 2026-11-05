@@ -62,6 +62,7 @@ export function CtaSection() {
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const tagRef = useRef<HTMLDivElement | null>(null);
   const headlineRef = useRef<HTMLHeadingElement | null>(null);
   const descRef = useRef<HTMLParagraphElement | null>(null);
@@ -81,12 +82,11 @@ export function CtaSection() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // The dark floating box scales up from 0.88 with a blur fade
+      // Fade the card in before its scroll-driven expansion begins.
       gsap.fromTo(
         box,
-        { scale: 0.88, opacity: 0, filter: "blur(12px)", y: 60 },
+        { opacity: 0, filter: "blur(12px)", y: 60 },
         {
-          scale: 1,
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
@@ -102,6 +102,54 @@ export function CtaSection() {
           },
         }
       );
+
+      gsap.fromTo(
+        box,
+        {
+          width: () =>
+            window.innerWidth < 768
+              ? window.innerWidth - 48
+              : Math.min(window.innerWidth * 0.72, 950),
+          maxWidth: () =>
+            window.innerWidth < 768
+              ? window.innerWidth - 48
+              : Math.min(window.innerWidth * 0.72, 950),
+          height: () => Math.max(window.innerHeight * 0.62, 500),
+          borderRadius: 36,
+        },
+        {
+          width: () => window.innerWidth,
+          maxWidth: () => window.innerWidth,
+          height: () => window.innerHeight,
+          borderRadius: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+
+      if (contentRef.current) {
+        gsap.fromTo(
+          contentRef.current,
+          { scale: 1 },
+          {
+            scale: 1.08,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "bottom bottom",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      }
 
       // Stagger inner elements
       gsap.fromTo(
@@ -163,16 +211,16 @@ export function CtaSection() {
       id="cta"
       data-theme-bg="#F7F7F5"
       data-theme-fg="#111111"
-      className="relative overflow-hidden grid place-items-center py-24 lg:py-0 lg:min-h-screen bg-[#F7F7F5] text-[#111111]"
+      className="relative min-h-[200vh] bg-[#F7F7F5] text-[#111111]"
     >
       <div
-        className="relative grid place-items-center overflow-hidden w-full max-w-[1320px] mx-auto px-6 sm:px-9"
+        className="sticky top-0 flex h-screen w-full items-center justify-center px-6 sm:px-9"
       >
         {/* Web3Task signature floating dark rounded box */}
         <div
           ref={boxRef}
-          className="relative grid place-items-center overflow-hidden w-full lg:w-[72%] min-h-[500px] lg:h-[62vh] rounded-[28px] sm:rounded-[36px] bg-[#111] text-[#F7F7F5] p-8 sm:p-14 lg:p-16 border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.25)]"
-          style={{ willChange: "transform, opacity, filter" }}
+          className="relative grid h-[62vh] min-h-[500px] max-md:w-[calc(100vw-3rem)] max-w-[950px] place-items-center overflow-hidden rounded-[28px] bg-[#111] text-[#F7F7F5] p-8 md:w-[72vw] sm:rounded-[36px] sm:p-14 lg:p-16 border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.25)]"
+          style={{ willChange: "width, height, border-radius, opacity, filter" }}
         >
           {/* Pulsating Aurora Glow */}
           <div
@@ -190,7 +238,7 @@ export function CtaSection() {
           <CtaParticles />
 
           {/* Inner Content */}
-          <div className="relative z-10 flex flex-col items-center text-center max-w-[700px] mx-auto">
+          <div ref={contentRef} className="relative z-10 flex flex-col items-center text-center max-w-[700px] mx-auto">
             {/* Beacon Tag */}
             <div
               ref={tagRef}

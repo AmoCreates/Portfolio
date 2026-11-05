@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { portfolioData } from "@/config/portfolioData";
+import { useContactModal } from "@/context/ContactModalContext";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
+  const { openContactModal } = useContactModal();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,7 +56,7 @@ export function Navbar() {
       <div
         className="pointer-events-auto flex items-center justify-between gap-6 lg:gap-10 rounded-full pl-4 pr-2.5 py-2.5 w-full max-w-[1120px] transition-all duration-300"
         style={{
-          background: "rgba(247, 247, 245, 0.88)",
+          background: "rgba(247, 247, 245, 0.05)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           border: "1px solid rgba(17, 17, 17, 0.08)",
@@ -104,13 +104,11 @@ export function Navbar() {
 
         {/* Action Button */}
         <div className="flex items-center gap-2">
-          <a
-            href="#cta"
-            onClick={(e) => handleLinkClick(e, "#cta")}
-            className="w3-tap-h hidden sm:inline-flex items-center gap-2 text-[12px] font-semibold rounded-full flex-shrink-0 transition-all duration-300 hover:bg-[#FF0D4A] hover:shadow-[0_8px_20px_rgba(255,13,74,0.35)]"
+          <button
+            type="button"
+            onClick={openContactModal}
+            className="w3-tap-h hidden sm:inline-flex items-center gap-2 text-[12px] font-semibold rounded-full flex-shrink-0 transition-all duration-300 bg-[#111] text-[#F7F7F5] hover:bg-[#FF0D4A] hover:shadow-[0_8px_20px_rgba(255,13,74,0.35)]"
             style={{
-              background: "#111",
-              color: "#F7F7F5",
               padding: "9px 18px",
             }}
           >
@@ -124,7 +122,7 @@ export function Navbar() {
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+          </button>
 
           {/* Mobile Menu Toggle Button */}
           <button
@@ -167,13 +165,16 @@ export function Navbar() {
             ))}
           </div>
 
-          <a
-            href="#cta"
-            onClick={(e) => handleLinkClick(e, "#cta")}
+          <button
+            type="button"
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              openContactModal();
+            }}
             className="mt-2 text-center text-[13px] font-semibold rounded-full bg-[#D6003C] text-white py-3 shadow-[0_8px_20px_rgba(255,13,74,0.4)]"
           >
             Start a Conversation ↗
-          </a>
+          </button>
         </div>
       )}
     </header>

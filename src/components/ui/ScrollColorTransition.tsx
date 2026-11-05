@@ -51,7 +51,7 @@ export function ScrollColorTransition() {
 
       const scrollY = window.scrollY;
       const viewportCenter = scrollY + window.innerHeight * 0.4; // slightly above center
-      const blendZone = window.innerHeight * 0.25; // transition zone
+      const blendZone = window.innerHeight * 0.4; // transition zone
 
       let bgColor = "";
       let fgColor = "";
@@ -67,38 +67,51 @@ export function ScrollColorTransition() {
         };
       });
 
-      for (let i = 0; i < sectionData.length; i++) {
-        const sec = sectionData[i];
-        const nextSec = sectionData[i + 1];
+      function getColorsAt(position: number) {
+        for (let i = 0; i < sectionData.length; i++) {
+          const sec = sectionData[i];
+          const nextSec = sectionData[i + 1];
 
-        if (viewportCenter >= sec.top && viewportCenter < sec.bottom) {
-          if (nextSec) {
-            // Check if we're in the blend zone near the bottom of this section
-            const distToBottom = sec.bottom - viewportCenter;
+          if (position >= sec.top && position < sec.bottom) {
+            if (nextSec) {
+              const distToBottom = sec.bottom - position;
 
-            if (distToBottom < blendZone) {
-              // We're in the transition zone — blend
-              const t = 1 - distToBottom / blendZone;
-              // Smooth ease
-              const easedT = t * t * (3 - 2 * t); // smoothstep
-              bgColor = lerpColor(hexToRgb(sec.bg), hexToRgb(nextSec.bg), easedT);
-              fgColor = lerpColor(hexToRgb(sec.fg), hexToRgb(nextSec.fg), easedT);
-            } else {
-              bgColor = sec.bg;
-              fgColor = sec.fg;
+              if (distToBottom < blendZone) {
+                const t = 1 - distToBottom / blendZone;
+                const easedT = t * t * (3 - 2 * t);
+                return {
+                  bg: lerpColor(hexToRgb(sec.bg), hexToRgb(nextSec.bg), easedT),
+                  fg: lerpColor(hexToRgb(sec.fg), hexToRgb(nextSec.fg), easedT),
+                };
+              }
             }
-          } else {
-            bgColor = sec.bg;
-            fgColor = sec.fg;
+
+            return { bg: sec.bg, fg: sec.fg };
           }
-          break;
         }
+
+        return { bg: sectionData[0].bg, fg: sectionData[0].fg };
       }
 
-      // Fallback to first section if before all
-      if (!bgColor && sectionData.length > 0) {
-        bgColor = sectionData[0].bg;
-        fgColor = sectionData[0].fg;
+      ({ bg: bgColor, fg: fgColor } = getColorsAt(viewportCenter));
+
+      const maxScroll = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight
+      );
+      const endBlendDistance = Math.min(blendZone, maxScroll);
+      const endBlendStart = maxScroll - endBlendDistance;
+
+      if (sectionData.length > 1 && endBlendDistance > 0 && scrollY >= endBlendStart) {
+        const finalSection = sectionData[sectionData.length - 1];
+        const startColors = getColorsAt(
+          endBlendStart + window.innerHeight * 0.4
+        );
+        const t = Math.min(1, (scrollY - endBlendStart) / endBlendDistance);
+        const easedT = t * t * (3 - 2 * t);
+
+        bgColor = lerpColor(hexToRgb(startColors.bg), hexToRgb(finalSection.bg), easedT);
+        fgColor = lerpColor(hexToRgb(startColors.fg), hexToRgb(finalSection.fg), easedT);
       }
 
       // Only update DOM when values change
