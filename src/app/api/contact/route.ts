@@ -5,11 +5,15 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { name, email, subject, message } = body;
+    const emailSubject =
+      typeof subject === "string" && subject.trim()
+        ? subject.trim()
+        : "Portfolio Inquiry";
 
     // Server-side validation
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !message) {
       return NextResponse.json(
-        { error: "All fields (name, email, subject, message) are required." },
+        { error: "Name, email, and message are required." },
         { status: 400 }
       );
     }
@@ -41,7 +45,7 @@ export async function POST(req: Request) {
       from: `"${name} (Portfolio Inquiry)" <${emailUser}>`,
       replyTo: email,
       to: emailUser,
-      subject: `[Portfolio Inquiry] ${subject}`,
+      subject: `[Portfolio Inquiry] ${emailSubject}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -75,7 +79,7 @@ export async function POST(req: Request) {
               </div>
               <div class="field">
                 <div class="label">Subject</div>
-                <div class="value">${subject}</div>
+                <div class="value">${emailSubject}</div>
               </div>
               <div class="field">
                 <div class="label">Message</div>
