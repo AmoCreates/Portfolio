@@ -137,6 +137,15 @@ export function Footer() {
                 <span className="font-mono text-xs">↗</span>
               </a>
               <a
+                href={portfolioData.personal.socialLinks.find((s) => s.platform === "LeetCode")?.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[14px] text-[#888] transition-colors hover:text-[#FF0D4A] flex items-center gap-2"
+              >
+                <span>LeetCode</span>
+                <span className="font-mono text-xs">↗</span>
+              </a>
+              <a
                 href={portfolioData.personal.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"

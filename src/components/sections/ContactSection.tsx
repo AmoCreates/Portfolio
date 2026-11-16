@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
+  Code2,
   Mail,
   Send,
   Check,
@@ -222,6 +223,7 @@ export function ContactSection() {
                     >
                       {link.platform === "GitHub" && <Github className="h-3.5 w-3.5" />}
                       {link.platform === "LinkedIn" && <Linkedin className="h-3.5 w-3.5" />}
+                      {link.platform === "LeetCode" && <Code2 className="h-3.5 w-3.5" />}
                       {link.platform === "Email" && <Mail className="h-3.5 w-3.5" />}
                       <span>{link.platform}</span>
                     </MagneticButton>

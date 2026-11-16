@@ -24,7 +24,7 @@ export const portfolioData: PortfolioData = {
     ],
     email: "anmolmaurya.in@gmail.com",
     github: "https://github.com/AmoCreates",
-    resumeUrl: "https://drive.google.com/file/d/1PHONNvv1tAYrVZ8VVs6eEupxiQ6qNGOe/view?usp=sharing",
+    resumeUrl: "https://drive.google.com/file/d/1kPoQxzOmVPdNa7mdjAfzhZUZd__0ns0H/view?usp=sharing",
     stats: [
       {
         value: "6+",
@@ -56,9 +56,15 @@ export const portfolioData: PortfolioData = {
       },
       {
         platform: "LinkedIn",
-        url: "https://linkedin.com",
+        url: "https://linkedin.com/in/anmolmaurya",
         displayHandle: "Anmol Maurya",
         icon: "Linkedin",
+      },
+      {
+        platform: "LeetCode",
+        url: "https://leetcode.com/u/AmoCreatesXLeetcode/",
+        displayHandle: "AmoCreatesXLeetcode",
+        icon: "Code2",
       },
       {
         platform: "Email",

@@ -81,7 +81,7 @@ export interface Experience {
 }
 
 export interface SocialLink {
-  platform: "GitHub" | "LinkedIn" | "Twitter" | "Email" | "Discord";
+  platform: "GitHub" | "LinkedIn" | "Twitter" | "Email" | "Discord" | "LeetCode";
   url: string;
   displayHandle: string;
   icon: string;
