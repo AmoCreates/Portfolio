@@ -24,7 +24,7 @@ export const portfolioData: PortfolioData = {
     ],
     email: "anmolmaurya.in@gmail.com",
     github: "https://github.com/AmoCreates",
-    resumeUrl: "https://drive.google.com/file/d/1kPoQxzOmVPdNa7mdjAfzhZUZd__0ns0H/view?usp=sharing",
+    resumeUrl: "https://docs.google.com/document/d/18kL-P7PTPkzSElZM6298LHqT3M9tKE6MVbh9c2uAtp0/edit?usp=sharing",
     stats: [
       {
         value: "6+",
